@@ -44,26 +44,33 @@ while(cap.isOpened()):
 	hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
 	# Generating mask to detect red color
-	lower_red = np.array([0,120,70])
-	upper_red = np.array([10,255,255])
-	mask1 = cv2.inRange(hsv,lower_red,upper_red)
+	# lower_red = np.array([0,120,70])
+	# upper_red = np.array([10,255,255])
+	# mask1 = cv2.inRange(hsv,lower_red,upper_red)
 
-	lower_red = np.array([170,120,70])
-	upper_red = np.array([180,255,255])
-	mask2 = cv2.inRange(hsv,lower_red,upper_red)
+	# lower_red = np.array([170,120,70])
+	# upper_red = np.array([180,255,255])
+	# mask2 = cv2.inRange(hsv,lower_red,upper_red)
 
-	mask1 = mask1+mask2
+	# using green color cloth instead of red
+	lower_green = np.array([35, 120, 70])  # Lower HSV values for green color
+	upper_green = np.array([85, 255, 255])  # Upper HSV values for green color
+	mask1 = cv2.inRange(hsv, lower_green, upper_green)
+
+	# mask1 = mask1+mask2
 
     # Step 3: Segmenting out the detected red colored cloth
 	# Refining the mask corresponding to the detected red color
 	mask1 = cv2.morphologyEx(mask1, cv2.MORPH_OPEN, np.ones((3,3),np.uint8),iterations=2)
 	mask1 = cv2.dilate(mask1,np.ones((3,3),np.uint8),iterations = 1)
 	mask2 = cv2.bitwise_not(mask1)
-
+	
 
     # Step 4: Generating the final augmented output to create a magical effect
 	res1 = cv2.bitwise_and(background,background,mask=mask1)
 	res2 = cv2.bitwise_and(img,img,mask=mask2)
+	cv2.imshow('bitwise end of bg and mask1', res1)
+	
 	final_output = cv2.addWeighted(res1,1,res2,1,0)
 
 	cv2.imshow('Welcome to the world of magic..',final_output)
